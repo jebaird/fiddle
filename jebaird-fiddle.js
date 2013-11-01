@@ -1,64 +1,20 @@
 /*
  * jebaird fiddle fetch local links text via ajax and make them editable
- * 
-
-	
-	$('a[title="iframe"]').each(function(){
-		var $this = $(this);
-		var id = "iframe-"+ Math.floor(Math.random()*10000);
-		var $iframe = $('<iframe width="100%" height="250" src="'+$this.attr("href")+'" id="'+id+'"></iframe>');
-
-		if(/^http/ig.test($this.attr("href"))== false){
-		    
-		    $.get($this.attr("href"),function(data){
-		        $("<pre>")
-		         .css({
-                        "max-height": 500,
-                        "overflow": "auto"
-                    })
-                .text(data)
-                
-                .wrapInner("<code contenteditable='true'></code>")
-                .on("input", "> code", function(e){
-                	setIframeContent($iframe[0],this.innerText)
-                	
-                })
-                .insertAfter($iframe)
-		    })
-			
-		}
-		
-		
-		
-		$iframe.insertAfter($this)
-		$this.hide();
-			
-	})
-		
-		
-			var setIframeContent = function( iframe, content ){
-		iframe.src = "data:text/html;charset=utf-8," + encodeURI(fixProtocol(content));
-	}
+ * @author Jesse Baird <jebaird@gmail.com>
  * 
  */
 
 
 (function(){
-	
-	//var pro
-	
-	
+
 	var fixProtocol = function( content ){
 		return content.replace(/\/\//ig,'http://')
-	}
-	var setIframeContent = function( iframe, content ){
-		//iframe.src = "data:text/html;charset=utf-8," + encodeURI(fixProtocol(content));
+	},
+	setIframeContent = function( iframe, content ){
 		iframe.srcDoc = content;
-	}
-	
-	
-	
-	var jebaird = window.jebaird || ( window.jebaird = {} );
+	},
+	//use the jebaird window namespace
+	jebaird = window.jebaird || ( window.jebaird = {} );
 	
 	var fiddle = (function(){
 		
@@ -84,13 +40,14 @@
 				
 				iframe.width = '100%';
 				
+				iframe.classList.add("jb-fiddle-display");
+				
 				iframe.src = e.getAttribute("data-href");
 				//Todo check source, make sure we can access the contents of the iframe
 				this.bind(iframe, 'load', function(){
 					var content = (this.contentWindow || this.contentDocument);
-					console.log(e, this.contentWindow)
 					//setup the event handlers, use contentebale 
-					console.dir(content.window.innerHTML)
+					//TODO: figure out how to get the whole content including the <html> tag
 					self._editorSetup(content.document.body.innerHTML)
 				})
 				
@@ -105,9 +62,10 @@
 				code.innerText = text;
 				code.setAttribute("contenteditable", "true");
 				
+				code.classList.add("jb-fiddle-editor");
+				
 				this.bind(code, "input", function(e){
 					//iframe
-					console.log("input triggered")
 					setIframeContent(iframe, this.innerText)
 				})
 				
