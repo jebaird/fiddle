@@ -12,9 +12,10 @@
 	},
 	setIframeContent = function( iframe, content ){
 		iframe.srcDoc = content;
-	},
+	}
+	
 	//use the jebaird window namespace
-	jebaird = window.jebaird || ( window.jebaird = {} );
+	var jebaird = window.jebaird || ( window.jebaird = {} );
 	
 	var fiddle = (function(){
 		
@@ -42,13 +43,13 @@
 				
 				iframe.classList.add("jb-fiddle-display");
 				
-				iframe.src = e.getAttribute("data-href");
+				iframe.src = e.getAttribute("href");
 				//Todo check source, make sure we can access the contents of the iframe
 				this.bind(iframe, 'load', function(){
 					var content = (this.contentWindow || this.contentDocument);
 					//setup the event handlers, use contentebale 
 					//TODO: figure out how to get the whole content including the <html> tag
-					self._editorSetup(content.document.body.innerHTML)
+					self._editorSetup(content.document.body.innerHTML.trim())
 				})
 				
 				this._element.parentNode.insertBefore(iframe,e);
@@ -62,12 +63,12 @@
 				code.innerText = text;
 				code.setAttribute("contenteditable", "true");
 				
-				code.classList.add("jb-fiddle-editor");
-				
 				this.bind(code, "input", function(e){
 					//iframe
-					setIframeContent(iframe, this.innerText)
+					setIframeContent(iframe, this.innerText )
 				})
+				
+				editor.classList.add("jb-fiddle-editor");
 				
 				editor.appendChild(code);
 				this._element.parentNode.insertBefore(editor,this._element);
